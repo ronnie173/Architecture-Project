@@ -20,6 +20,7 @@ import utd.claimsProcessing.messageProcessors.PaymentProcessor;
 import utd.claimsProcessing.messageProcessors.QueueNames;
 import utd.claimsProcessing.messageProcessors.RejectedClaimsProcessor;
 import utd.claimsProcessing.messageProcessors.RetrieveMemberProcessor;
+import utd.claimsProcessing.messageProcessors.RetrievePolicyProcessor;
 import utd.claimsProcessing.messageProcessors.RetrieveProviderProcessor;
 import utd.claimsProcessing.messageProcessors.SaveFolderProcessor;
 
@@ -75,6 +76,9 @@ public class ClaimsProcessingApp implements ExceptionListener {
 				QueueNames.retrieveMember);
 		installProcessor(new RetrieveProviderProcessor(session),
 				QueueNames.retrieveProvider);
+		installProcessor(new RetrievePolicyProcessor(session),
+				QueueNames.retrievePolicy);
+		;
 
 		installProcessor(new PaymentProcessor(session), QueueNames.payClaim);
 		installProcessor(new DenyClaimsProcessor(session), QueueNames.denyClaim);
