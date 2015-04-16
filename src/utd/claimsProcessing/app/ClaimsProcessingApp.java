@@ -81,6 +81,8 @@ public class ClaimsProcessingApp implements ExceptionListener {
 				QueueNames.retrievePolicy);
 		installProcessor(new RetrieveProcedureProcessor(session),
 				QueueNames.retrieveProcedure);
+		installProcessor(new RetrieveProcedureProcessor(session),
+				QueueNames.routeClaim);
 		;
 
 		installProcessor(new PaymentProcessor(session), QueueNames.payClaim);

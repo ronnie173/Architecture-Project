@@ -35,7 +35,7 @@ public class RetrievePolicyProcessor extends MessageProcessor implements
 	}
 
 	public void initialize() throws JMSException {
-		Queue queue = getSession().createQueue(QueueNames.retrieveProvider);
+		Queue queue = getSession().createQueue(QueueNames.retrieveProcedure);
 		producer = getSession().createProducer(queue);
 	}
 
