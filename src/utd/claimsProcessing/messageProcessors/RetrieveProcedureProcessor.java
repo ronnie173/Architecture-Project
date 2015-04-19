@@ -18,11 +18,12 @@ import utd.claimsProcessing.domain.Procedure;
 import utd.claimsProcessing.domain.RejectedClaimInfo;
 
 /**
- * A message processor responsible for retrieving the Procedure identified by the
- * Claim from the ProcedureDAO. The retrieved policy is attached to the ClaimFolder
- * before passing to the next step in the process.
+ * A message processor responsible for retrieving the Procedure identified by
+ * the Claim from the ProcedureDAO. The retrieved policy is attached to the
+ * ClaimFolder before passing to the next step in the process.
  */
-public class RetrieveProcedureProcessor extends MessageProcessor implements MessageListener{
+public class RetrieveProcedureProcessor extends MessageProcessor implements
+		MessageListener {
 	private final static Logger logger = Logger
 			.getLogger(RetrieveProcedureProcessor.class);
 
@@ -33,7 +34,7 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements Mess
 	}
 
 	public void initialize() throws JMSException {
-		Queue queue = getSession().createQueue(QueueNames.routeClaim);
+		Queue queue = getSession().createQueue(QueueNames.retrieveProcedure);
 		producer = getSession().createProducer(queue);
 	}
 
@@ -44,7 +45,8 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements Mess
 			Object object = ((ObjectMessage) message).getObject();
 			ClaimFolder claimFolder = (ClaimFolder) object;
 			String procedureID = claimFolder.getProcedure().getID();
-			Procedure procedure = ProcedureDAO.getSingleton().retrieveProcedure(procedureID);
+			Procedure procedure = ProcedureDAO.getSingleton()
+					.retrieveProcedure(procedureID);
 			if (procedure == null) {
 				Claim claim = claimFolder.getClaim();
 				RejectedClaimInfo rejectedClaimInfo = new RejectedClaimInfo(
@@ -56,8 +58,7 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements Mess
 				}
 
 				rejectClaim(claimFolder);
-			} 
-			else {
+			} else {
 				logger.debug("Procedure Member: " + procedure.getID());
 
 				claimFolder.setProcedure(procedure);
@@ -65,7 +66,8 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements Mess
 				Message claimMessage = getSession().createObjectMessage(
 						claimFolder);
 				producer.send(claimMessage);
-				logger.debug("Finished Sending Procedure : " + procedure.getID());
+				logger.debug("Finished Sending Procedure : "
+						+ procedure.getID());
 			}
 		} catch (Exception ex) {
 			logError(

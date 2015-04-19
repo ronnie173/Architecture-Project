@@ -35,7 +35,7 @@ public class RetrievePolicyProcessor extends MessageProcessor implements
 	}
 
 	public void initialize() throws JMSException {
-		Queue queue = getSession().createQueue(QueueNames.retrieveProcedure);
+		Queue queue = getSession().createQueue(QueueNames.retrievePolicy);
 		producer = getSession().createProducer(queue);
 	}
 
@@ -47,6 +47,7 @@ public class RetrievePolicyProcessor extends MessageProcessor implements
 			ClaimFolder claimFolder = (ClaimFolder) object;
 
 			String policyID = claimFolder.getPolicy().getID();
+
 			Policy policy = PolicyDAO.getSingleton().retrievePolicy(policyID);
 			if (policy == null) {
 				Claim claim = claimFolder.getClaim();
