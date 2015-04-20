@@ -34,7 +34,7 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements
 	}
 
 	public void initialize() throws JMSException {
-		Queue queue = getSession().createQueue(QueueNames.retrieveProcedure);
+		Queue queue = getSession().createQueue(QueueNames.routeClaim);
 		producer = getSession().createProducer(queue);
 	}
 
@@ -44,13 +44,13 @@ public class RetrieveProcedureProcessor extends MessageProcessor implements
 		try {
 			Object object = ((ObjectMessage) message).getObject();
 			ClaimFolder claimFolder = (ClaimFolder) object;
-			String procedureID = claimFolder.getProcedure().getID();
+			String procedureCode = claimFolder.getClaim().getProcedureCode();
 			Procedure procedure = ProcedureDAO.getSingleton()
-					.retrieveProcedure(procedureID);
+					.retrieveByCode(procedureCode);
 			if (procedure == null) {
 				Claim claim = claimFolder.getClaim();
 				RejectedClaimInfo rejectedClaimInfo = new RejectedClaimInfo(
-						"Procedure Not Found: " + procedureID);
+						"Procedure Not Found: " + procedureCode);
 				claimFolder.setRejectedClaimInfo(rejectedClaimInfo);
 
 				if (!StringUtils.isBlank(claim.getReplyTo())) {
