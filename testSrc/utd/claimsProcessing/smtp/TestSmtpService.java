@@ -22,8 +22,8 @@ public class TestSmtpService extends TestCase
 		//service.setUserID("utdallas4352@gmail.com");
 		//service.setPasswd("utdallas");
 		
-		String from = "utdallas4352@gmail.com";
-		String to = "mikechristiansen2000@gmail.com";
+		String from = "imperialsoup@gmail.com";
+		String to = "imperialfrances@gmail.com";
 		String subject = "Test Subject " + new Date();
 		String message = "Test Message " + new Date();
 		

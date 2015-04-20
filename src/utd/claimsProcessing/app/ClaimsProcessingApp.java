@@ -13,21 +13,7 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 
-import utd.claimsProcessing.messageProcessors.BuildClaimsFolderProcessor;
-import utd.claimsProcessing.messageProcessors.DentalClaimsProcessor;
-import utd.claimsProcessing.messageProcessors.DenyClaimsProcessor;
-import utd.claimsProcessing.messageProcessors.GeneralPracticeClaimsProcessor;
-import utd.claimsProcessing.messageProcessors.MessageProcessor;
-import utd.claimsProcessing.messageProcessors.OptometryClaimsProcessor;
-import utd.claimsProcessing.messageProcessors.PaymentProcessor;
-import utd.claimsProcessing.messageProcessors.QueueNames;
-import utd.claimsProcessing.messageProcessors.RadiologyClaimProcessor;
-import utd.claimsProcessing.messageProcessors.RejectedClaimsProcessor;
-import utd.claimsProcessing.messageProcessors.RetrieveMemberProcessor;
-import utd.claimsProcessing.messageProcessors.RetrievePolicyProcessor;
-import utd.claimsProcessing.messageProcessors.RetrieveProcedureProcessor;
-import utd.claimsProcessing.messageProcessors.RetrieveProviderProcessor;
-import utd.claimsProcessing.messageProcessors.SaveFolderProcessor;
+import utd.claimsProcessing.messageProcessors.*;
 
 /**
  * The main for the claims processing application.
@@ -85,8 +71,8 @@ public class ClaimsProcessingApp implements ExceptionListener {
 				QueueNames.retrievePolicy);
 		installProcessor(new RetrieveProcedureProcessor(session),
 				QueueNames.retrieveProcedure);
-		// installProcessor(new RouteClaim(session), QueueNames.routeClaim);
-		installProcessor(new GeneralPracticeClaimsProcessor(session),
+		installProcessor(new RouteClaim(session), QueueNames.routeClaim);
+		/*installProcessor(new GeneralPracticeClaimsProcessor(session),
 				QueueNames.processGPClaim);
 		installProcessor(new OptometryClaimsProcessor(session),
 				QueueNames.processOptometryClaim);
@@ -94,7 +80,7 @@ public class ClaimsProcessingApp implements ExceptionListener {
 		installProcessor(new DentalClaimsProcessor(session),
 				QueueNames.processDentalClaim);
 		installProcessor(new RadiologyClaimProcessor(session),
-				QueueNames.processRadiologyClaim);
+				QueueNames.processRadiologyClaim);*/
 
 		installProcessor(new PaymentProcessor(session), QueueNames.payClaim);
 		installProcessor(new DenyClaimsProcessor(session), QueueNames.denyClaim);
