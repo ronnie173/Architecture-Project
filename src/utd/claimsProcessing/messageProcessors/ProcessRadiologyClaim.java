@@ -3,7 +3,6 @@ package utd.claimsProcessing.messageProcessors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -23,9 +22,7 @@ public class ProcessRadiologyClaim extends AbstractProcedureProcessor implements
 
 	private final static Logger logger = Logger
 			.getLogger(ProcessRadiologyClaim.class);
-	
-	private MessageProducer producer;
-    
+
 	@Override
 	public void onMessage(Message message) {
 		logger.debug("RadiologyClaimProcessor ReceivedMessage");
@@ -39,10 +36,9 @@ public class ProcessRadiologyClaim extends AbstractProcedureProcessor implements
 							ProcedureCategory.Radiology)) {
 				Message claimMessage = getSession().createObjectMessage(
 						claimFolder);
-				producer.send(claimMessage);
+				paymentProducer.send(claimMessage);
 			}
-			
-			
+
 		} catch (Exception ex) {
 			logError("RadiologyClaimProcessor.onMessage() " + ex.getMessage(),
 					ex);
@@ -52,10 +48,12 @@ public class ProcessRadiologyClaim extends AbstractProcedureProcessor implements
 
 	@Override
 	public void initialize() throws JMSException {
-		
-		Queue queue = getSession()
-				.createQueue(QueueNames.payClaim);
-		producer = getSession().createProducer(queue);
+
+		Queue queue = getSession().createQueue(QueueNames.payClaim);
+		paymentProducer = getSession().createProducer(queue);
+
+		queue = getSession().createQueue(QueueNames.denyClaim);
+		denyProducer = getSession().createProducer(queue);
 
 	}
 

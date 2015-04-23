@@ -13,7 +13,20 @@ import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.log4j.Logger;
 
-import utd.claimsProcessing.messageProcessors.*;
+import utd.claimsProcessing.messageProcessors.BuildClaimsFolderProcessor;
+import utd.claimsProcessing.messageProcessors.DenyClaimsProcessor;
+import utd.claimsProcessing.messageProcessors.GeneralPracticeClaimProcessor;
+import utd.claimsProcessing.messageProcessors.MessageProcessor;
+import utd.claimsProcessing.messageProcessors.OptometryClaimProcessor;
+import utd.claimsProcessing.messageProcessors.PaymentProcessor;
+import utd.claimsProcessing.messageProcessors.QueueNames;
+import utd.claimsProcessing.messageProcessors.RejectedClaimsProcessor;
+import utd.claimsProcessing.messageProcessors.RetrieveMemberProcessor;
+import utd.claimsProcessing.messageProcessors.RetrievePolicyProcessor;
+import utd.claimsProcessing.messageProcessors.RetrieveProcedureProcessor;
+import utd.claimsProcessing.messageProcessors.RetrieveProviderProcessor;
+import utd.claimsProcessing.messageProcessors.RouteClaim;
+import utd.claimsProcessing.messageProcessors.SaveFolderProcessor;
 
 /**
  * The main for the claims processing application.
@@ -58,8 +71,6 @@ public class ClaimsProcessingApp implements ExceptionListener {
 	 * This method registers each of the application's message listeners.
 	 */
 	public void buildProcessors() throws JMSException {
-		installProcessor(new RejectedClaimsProcessor(session),
-				QueueNames.rejectClaims);
 
 		installProcessor(new BuildClaimsFolderProcessor(session),
 				QueueNames.incomingClaims);
@@ -74,19 +85,22 @@ public class ClaimsProcessingApp implements ExceptionListener {
 		installProcessor(new RouteClaim(session), QueueNames.routeClaim);
 		installProcessor(new GeneralPracticeClaimProcessor(session),
 				QueueNames.processGPClaim);
-			/*
-		installProcessor(new OptometryClaimsProcessor(session),
+		//
+		installProcessor(new OptometryClaimProcessor(session),
 				QueueNames.processOptometryClaim);
 
-		installProcessor(new DentalClaimsProcessor(session),
-				QueueNames.processDentalClaim);
-		installProcessor(new RadiologyClaimProcessor(session),
-				QueueNames.processRadiologyClaim);*/
+		// installProcessor(new DentalClaimsProcessor(session),
+		// QueueNames.processDentalClaim);
+		// installProcessor(new RadiologyClaimProcessor(session),
+		// QueueNames.processRadiologyClaim);
 
 		installProcessor(new PaymentProcessor(session), QueueNames.payClaim);
 		installProcessor(new DenyClaimsProcessor(session), QueueNames.denyClaim);
 		installProcessor(new SaveFolderProcessor(session),
 				QueueNames.saveFolder);
+		installProcessor(new RejectedClaimsProcessor(session),
+				QueueNames.rejectClaims);
+
 	}
 
 	/**
