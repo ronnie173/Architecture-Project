@@ -22,7 +22,7 @@ import utd.claimsProcessing.domain.RejectedClaimInfo;
  */
 public class RouteClaim extends MessageProcessor implements MessageListener{
 	private final static Logger logger = Logger
-			.getLogger(RetrieveProcedureProcessor.class);
+			.getLogger(RouteClaim.class);
 
 	private MessageProducer producer;
 
