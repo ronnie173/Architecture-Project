@@ -74,14 +74,14 @@ public class ClaimsProcessingApp implements ExceptionListener {
 		installProcessor(new RouteClaim(session), QueueNames.routeClaim);
 		installProcessor(new GeneralPracticeClaimProcessor(session),
 				QueueNames.processGPClaim);
-			/*
-		installProcessor(new OptometryClaimsProcessor(session),
-				QueueNames.processOptometryClaim);
+			
+	//	installProcessor(new OptometryClaimsProcessor(session),
+				//QueueNames.processOptometryClaim);
 
-		installProcessor(new DentalClaimsProcessor(session),
+		installProcessor(new DentalClaimProcessor(session),
 				QueueNames.processDentalClaim);
-		installProcessor(new RadiologyClaimProcessor(session),
-				QueueNames.processRadiologyClaim);*/
+		installProcessor(new ProcessRadiologyClaim(session),
+				QueueNames.processRadiologyClaim);
 
 		installProcessor(new PaymentProcessor(session), QueueNames.payClaim);
 		installProcessor(new DenyClaimsProcessor(session), QueueNames.denyClaim);
