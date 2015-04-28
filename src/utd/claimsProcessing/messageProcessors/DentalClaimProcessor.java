@@ -3,6 +3,7 @@ package utd.claimsProcessing.messageProcessors;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -12,15 +13,14 @@ import org.apache.log4j.Logger;
 import utd.claimsProcessing.domain.ClaimFolder;
 import utd.claimsProcessing.domain.ProcedureCategory;
 
-public class OptometryClaimProcessor extends AbstractProcedureProcessor
-		implements MessageListener {
+public class DentalClaimProcessor extends AbstractProcedureProcessor implements
+		MessageListener {
 
-	public OptometryClaimProcessor(Session session) {
+	public DentalClaimProcessor(Session session) {
 		super(session);
 	}
 
 	public void initialize() throws JMSException {
-
 		Queue queue = getSession().createQueue(QueueNames.payClaim);
 		paymentProducer = getSession().createProducer(queue);
 
@@ -29,25 +29,28 @@ public class OptometryClaimProcessor extends AbstractProcedureProcessor
 	}
 
 	private final static Logger logger = Logger
-			.getLogger(OptometryClaimProcessor.class);
+			.getLogger(DentalClaimProcessor.class);
+	// private AbstractProcedureProcessor processor;
+	private MessageProducer producer;
 
 	public void onMessage(Message message) {
-		logger.debug("OptometryClaimProcessor ReceivedMessage");
+		logger.debug("DentalClaimProcessor ReceivedMessage");
 
 		try {
 			Object object = ((ObjectMessage) message).getObject();
 			ClaimFolder claimFolder = (ClaimFolder) object;
 
+			Message claimMessage = getSession()
+					.createObjectMessage(claimFolder);
+
 			if (validatePolicy(claimFolder)
-					&& validateProcedure(claimFolder,
-							ProcedureCategory.Optometry)) {
-				Message claimMessage = getSession().createObjectMessage(
-						claimFolder);
-				paymentProducer.send(claimMessage);
+					&& this.validateProcedure(claimFolder,
+							ProcedureCategory.Dental)) {
+				producer.send(claimMessage);
 			}
+
 		} catch (Exception ex) {
-			logError("OptometryClaimProcessor.onMessage() " + ex.getMessage(),
-					ex);
+			logError("DentalClaimProcessor.onMessage() " + ex.getMessage(), ex);
 		}
 
 	}

@@ -18,28 +18,26 @@ import utd.claimsProcessing.smtp.SmtpService;
 
 /**
  * A processor responsible for handling a claim which has been denied by the
- * workflow. The Provider originating the claim is notified of the denial
- * via email using the address provided by the Claim.
+ * workflow. The Provider originating the claim is notified of the denial via
+ * email using the address provided by the Claim.
  */
-public class DenyClaimsProcessor extends MessageProcessor implements MessageListener
-{
-	private final static Logger logger = Logger.getLogger(DenyClaimsProcessor.class);
+public class DenyClaimsProcessor extends MessageProcessor implements
+		MessageListener {
+	private final static Logger logger = Logger
+			.getLogger(DenyClaimsProcessor.class);
 
 	private MessageProducer producer;
 
-	public DenyClaimsProcessor(Session session)
-	{
+	public DenyClaimsProcessor(Session session) {
 		super(session);
 	}
 
-	public void initialize() throws JMSException
-	{
+	public void initialize() throws JMSException {
 		Queue queue = getSession().createQueue(QueueNames.saveFolder);
 		producer = getSession().createProducer(queue);
 	}
 
-	public void onMessage(Message message)
-	{
+	public void onMessage(Message message) {
 		logger.debug("DenyClaimsProcessor ReceivedMessage");
 
 		try {
@@ -47,49 +45,47 @@ public class DenyClaimsProcessor extends MessageProcessor implements MessageList
 			ClaimFolder claimFolder = (ClaimFolder) object;
 
 			sendDeniedNotification(claimFolder);
-			
-			Message claimMessage = getSession().createObjectMessage(claimFolder);
+
+			Message claimMessage = getSession()
+					.createObjectMessage(claimFolder);
 			producer.send(claimMessage);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			logError("DenyClaimsProcessor.onMessage() " + ex.getMessage(), ex);
 		}
 	}
-	
-	private void sendDeniedNotification(ClaimFolder claimFolder) throws Exception
-	{
+
+	private void sendDeniedNotification(ClaimFolder claimFolder)
+			throws Exception {
 		String emailAddr = claimFolder.getClaim().getReplyTo();
 		String claimID = claimFolder.getClaimID();
-		if(StringUtils.isBlank(emailAddr)) {
-			logger.info("Unable to send notification email. Folder ID: " + claimID);
-		}
-		else {
+		if (StringUtils.isBlank(emailAddr)) {
+			logger.info("Unable to send notification email. Folder ID: "
+					+ claimID);
+		} else {
 			String to = emailAddr;
 			String subject = "Your claim has been denied. Claim: " + claimID;
 			String body = buildBody(claimFolder);
-			
+
 			SmtpService smtpService = SmtpService.getSingleton();
 			String domain = smtpService.getDomain();
 			String from = "donotreply@" + domain;
 
 			try {
 				smtpService.sendMail(from, to, subject, body);
-			}
-			catch(EmailException ex) {
+			} catch (EmailException ex) {
 				logger.error("Unable to send email " + ex.getMessage(), ex);
 			}
 		}
 	}
 
-	private String buildBody(ClaimFolder claimFolder)
-    {
+	private String buildBody(ClaimFolder claimFolder) {
 		RejectedClaimInfo rejectionInfo = claimFolder.getRejectedClaimInfo();
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append("Your claim number " + claimFolder.getClaimID());
 		sb.append(" has been denied.");
-		sb.append("\nThe reason for the denial is " + rejectionInfo.getReason() );
+		sb.append("\nThe reason for the denial is " + rejectionInfo.getReason());
 		sb.append(" : " + rejectionInfo.getDescription());
-	    return sb.toString();
-    }
+		return sb.toString();
+	}
 }
